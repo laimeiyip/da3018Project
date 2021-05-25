@@ -36,7 +36,7 @@ for line in range(len(overlap_dataframe)):
      this.line[overlapB.end] - this.line[overlapB.start] == this.line[contigB.length]:
      remove.this.line
      
-- Count the number of unique identifiers
+- Count the number of unique contigs
 ### cat fulldata.txt | tr '[:blank:]' '\n' | grep . | sort -u | wc -l
 00:01 - 00:04. Took only 3 minutes!
 Ans: 8084469
@@ -44,7 +44,36 @@ Ans: 8084469
 - Create random subsets of different sizes using Unix
 ### cat input.txt | awk 'BEGIN {srand()} !/^$/ { if (rand() <= .01) print $0}' > sample.txt
 Created 5 random subsets of size (approx) 640000, 64000, 6400, 640
-sample1.txt
-sample2.txt
-sample3.txt
-sample4.txt
+
+sample1.txt, sample2.txt, sample3.txt, sample4.txt
+
+## 25-05-21
+
+Removal of commutative pairs means that 
+1) Sort column 1 and count the number of times a contig repeats itself
+2) Sort column 2 and count the number of times a contig repeats itself.
+For a given contig i, sum the numbers in (1) and (2) to get number of neighbours for contig i.
+
+How to effectively assign unique ID numbers to contigs?
+Since I have the list of unique contigs (sorted), starting from integer 1, I just run down the list and assign one after another an integer.
+Very cheap to create a seq of integers with bash.
+### seq 1 8084469 > IDs.txt
+Write the unique contigs list to a txt file: uniq_contig.txt
+paste this list of IDs as a new column into the unique contigs list.
+Tried to do both operations by one-liner. Did not managed to.
+### paste -d" " IDs.txt uniq_contig.txt > contigsWithID.txt
+
+How to effectively match the unique ID numbers to contigs in the edge list?
+- Construct a hash map of ID-contigs in java
+- Separate the two columns in edge list into two lists of contigs
+### awk '{print $1}' < fulldata.txt > left_neigh
+### awk '{print $2}' < fulldata.txt >> right_neigh
+These two operations are very fast to execute in bash. 1 minute in total.
+- Match contigs lists with getValue() in ID hash map. 
+- I get two lists of vertices that form edges between them. 
+- I use them to create graphs using Java's HashMaps.
+
+
+
+
+
