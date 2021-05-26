@@ -7,7 +7,6 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -28,8 +27,8 @@ public class SpruceGraph {
 	 * @param ID: txt file containing ID-contig key-val pairs
 	 * @return a hash map of contigs
 	 */
-	private static AbstractMap<Integer, String> construct_ID_map(String ID) {
-		AbstractMap<Integer, String> ID_Map = new HashMap<Integer, String>();
+	private static Map<Integer, String> construct_ID_map(String ID) {
+		Map<Integer, String> ID_Map = new HashMap<Integer, String>();
 		File contig_ID = new File(ID);
 		try {
 			Scanner sc = new Scanner(contig_ID);
@@ -52,16 +51,16 @@ public class SpruceGraph {
 	 * @param f: file containing neighbours on one side, ID_map
 	 * @return a list of neighbours identified by ID numbers
 	 */
-	private static List<Integer> assign_id(String f, AbstractMap<Integer, String> m){
+	private static List<Integer> assign_id(String f, Map<Integer, String> m){
 		List<Integer> neighbour_ID = new ArrayList<Integer>();
 		File contigs = new File(f);
 		try {
 			Scanner sc = new Scanner(contigs);
 			while (sc.hasNextLine()) {
 				String inputString = sc.nextLine();
-				for (AbstractMap.Entry<Integer, String> entry: m.entrySet()) {
-					if (inputString.compareTo(entry.getValue())==0);
-					neighbour_ID.add(entry.getKey());
+				for (Integer id : m.keySet()) {
+					if (inputString.compareTo(m.get(id))==0);
+					neighbour_ID.add(id);
 				}
 			}sc.close();
 		} catch (FileNotFoundException e) {
@@ -69,6 +68,29 @@ public class SpruceGraph {
 			System.exit(0);
 		}
 		return neighbour_ID;
+	}
+	
+	private static List<Integer> constructNeighbours(String f){
+		List<Integer> neighbour_IDs = new ArrayList<Integer>();
+		File neighs = new File(f);
+		try {
+			Scanner sc = new Scanner(neighs);
+			while (sc.hasNextLine()) {
+				String inputString = sc.nextLine();
+				neighbour_IDs.add(Integer.parseInt(inputString));
+			}
+			sc.close();
+		} catch (FileNotFoundException e) {
+			System.err.println("File not found.");
+			System.exit(0);
+		}
+//		int mid_pt = neighbour_IDs.size()/2;
+//		List<Integer> left_neigh = neighbour_IDs.subList(0, mid_pt);
+//		List<Integer> right_neigh = neighbour_IDs.subList(mid_pt, neighbour_IDs.size());
+//		Map<String, List<Integer>> edge_set = new HashMap<String, List<Integer>>();
+//		edge_set.put("left_neigh", left_neigh);
+//		edge_set.put("right_neigh", right_neigh);
+		return neighbour_IDs;
 	}
 	
 	
@@ -81,7 +103,9 @@ public class SpruceGraph {
 		graph.putIfAbsent(l, new HashSet<Integer>()); // if this vertex is not in the graph yet, include it and give it an empty HashSet to store its neighbours
 		graph.putIfAbsent(r, new HashSet<Integer>());
 		graph.get(l).add(r);
+		//graph.get(l).add(l);
 		graph.get(r).add(l);
+		//graph.get(r).add(r);
 		visited.put(l, 0); // at point of construction, initialize all vertices as unvisited
 		visited.put(r, 0);
 	}
@@ -114,8 +138,8 @@ public class SpruceGraph {
 		List<Integer> comp_sizes = new ArrayList<Integer>();
 		int count = 0;
 		for (Integer vertex : visited.keySet()) {
-			if (visited.get(vertex) == 0) {
-				comp_sizes.add(DFS(vertex));
+			if (visited.get(vertex) == 0) { // if vertex is not visited, 
+				comp_sizes.add(DFS(vertex)); // visit it and get the size of the component
 				count += 1;
 			}
 		}
@@ -141,32 +165,47 @@ public class SpruceGraph {
 		return counts;
 	}
 	
+	
+	/**
+	 * Print the graph as vertex: [neighbours]
+	 */
+	private void printGraph() {
+		for (Integer vertex : graph.keySet()) {
+			System.out.println(vertex.toString() + ": " + graph.get(vertex));
+		}
+	}
+	
 
 	public static void main(String[] args) { //arg[0]:contigsWithID.txt; arg[1]:left neighbours; arg[2]:right neighbours
 		SpruceGraph graph = new SpruceGraph();
-		String ID_file = args[0];
-		String left_neigh_file = args[1];
-		String right_neigh_file = args[2];
-		AbstractMap<Integer, String> ID_map = construct_ID_map(ID_file);
-		List<Integer> left_neigh_ID = assign_id(left_neigh_file, ID_map);
-		List<Integer> right_neigh_ID = assign_id(right_neigh_file, ID_map);
+		//String ID_file = "src/proj1/long_list";
+		String left_neigh_file = "src/proj1/l4.txt";
+		String right_neigh_file = "src/proj1/r4.txt";
+		//Map<Integer, String> ID_map = construct_ID_map(ID_file);
+		
+		List<Integer> left_neigh_ID = constructNeighbours(left_neigh_file);
+		List<Integer> right_neigh_ID = constructNeighbours(right_neigh_file);
+		
 		
 		for (int i=0; i<left_neigh_ID.size(); i++) {
 			graph.addEdge(left_neigh_ID.get(i), right_neigh_ID.get(i));
 		}
 		
+		//graph.printGraph();
+		
 		// compute degree distribution
-		System.out.println(graph.DegreeDist());
+		System.out.println("Degree distribution: " + graph.DegreeDist());
 		
 		System.out.println("");
 		
+		List<Object> comp_result = graph.CountComponent();
 		// compute number of connected component
-		System.out.println("Number of connected components: " + graph.CountComponent().get(0));
+		System.out.println("Number of connected components: " + comp_result.get(0));
 		
 		System.out.println("");
 		
 		// compute component size distribution
-		System.out.println(graph.CountComponent().get(1));
+		System.out.println("Component size distribution: " + comp_result.get(1));
 
 		
 	}

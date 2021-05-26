@@ -74,6 +74,18 @@ These two operations are very fast to execute in bash. 1 minute in total.
 - I use them to create graphs using Java's HashMaps.
 
 
+## 26-05-21
+
+Realised problem with IDs generated. More than 1 million, get integers in scientific notation. Changed to
+### seq -f %1.0f  1 8084469 > IDs.txt
+
+Problem: cannot use Java to assign ID to the edge set. Ran out of memory.
+Solution: Do it in bash with unix commands.
+fgrep -f <edge set> <ID-contigs hash map>
+This operation is quite time consuming. For a 222-line txt file, took 10 min. 
+
+This is one possible command:
+### grep -wf right4.sort.txt contigsWithID.txt > right4_neigh.txt
 
 
 
