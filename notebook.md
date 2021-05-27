@@ -43,7 +43,7 @@ Ans: 8084469
 
 - Create random subsets of different sizes using Unix
 ### cat input.txt | awk 'BEGIN {srand()} !/^$/ { if (rand() <= .01) print $0}' > sample.txt
-Created 5 random subsets of size (approx) 640000, 64000, 6400, 640
+Created 5 random subsets of size (approx) 220000, 22000, 2200, 222
 
 sample1.txt, sample2.txt, sample3.txt, sample4.txt
 
@@ -85,7 +85,30 @@ fgrep -f <edge set> <ID-contigs hash map>
 This operation is quite time consuming. For a 222-line txt file, took 10 min. 
 
 This is one possible command:
-### grep -wf right4.sort.txt contigsWithID.txt > right4_neigh.txt
+### grep -wf right4.txt contigsWithID.txt > right4_neigh.txt
 
+Successfully tested with the smallest test set!
 
+Found a lightning unix command to assign IDs to the edge set
+### awk 'NR==FNR{A[$1];next}$2 in A' left4.txt contigsWithID.txt
+Took only seconds!
+Problem: Did not work because this is finding the common set based on the contigs so cannot handle repeats in left4.txt. 
 
+## 27-05-21
+
+Continue to try to solve the problem with assigning IDs to edge set.
+With the last method found on 26-05-21, not only it does not handle repeats, it returns a sorted output. This is bad because it messes up the connections.
+
+This seems to work.
+### while IFS= read -r line; do  grep -w "$line" contigsWithID.txt | awk '{print $0}'; done < right3.txt > right3.test.txt
+Took 3 hours. right3.txt has 2258 lines.
+
+### grep -wf left3.txt contigsWithID.txt > left3.test.txt
+Took 3 hours. But this method has the same problem with the `awk` method. Cannot use. 
+
+So in the end, it is this method that triumphs.
+### while IFS= read -r line; do  grep -w "$line" contigsWithID.txt | awk '{print $0}'; done < right3.txt > right3.test.txt
+
+May not be able to complete the three tasks for the whole data set because it takes way too long to assign IDs to the edge set.
+
+Tested Java code with 2258 edge set. OK!

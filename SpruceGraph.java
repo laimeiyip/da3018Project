@@ -1,7 +1,6 @@
 package proj1;
 
 import java.util.ArrayList;
-// import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -13,9 +12,10 @@ import java.util.Map;
 
 public class SpruceGraph {
 	
-	Map<Integer, HashSet<Integer>> graph;
-	Map<Integer, Integer> visited;
+	Map<Integer, HashSet<Integer>> graph; // initialize an empty hash map of vertices and their neighbours
+	Map<Integer, Integer> visited; // initialize an empty hash map of vertices and their traverse status
 	
+	// Constructor
 	SpruceGraph(){
 		graph = new HashMap<Integer, HashSet<Integer>>();
 		visited = new HashMap<Integer, Integer>();
@@ -27,23 +27,27 @@ public class SpruceGraph {
 	 * @param ID: txt file containing ID-contig key-val pairs
 	 * @return a hash map of contigs
 	 */
-	private static Map<Integer, String> construct_ID_map(String ID) {
-		Map<Integer, String> ID_Map = new HashMap<Integer, String>();
-		File contig_ID = new File(ID);
-		try {
-			Scanner sc = new Scanner(contig_ID);
-			while (sc.hasNextLine()) {
-				String input = sc.nextLine();
-				String[] elem = input.split(" ");
-				ID_Map.put(Integer.parseInt(elem[0]), elem[1]);
-			}
-			sc.close();
-		} catch (FileNotFoundException e) {
-			System.err.println("File not found.");
-			System.exit(0);
-		}
-		return ID_Map;
-	}
+	
+	// An earlier method to construct a hash map of contig IDs.
+	// Not feasible so not used. For own reference.
+	
+//	private static Map<Integer, String> construct_ID_map(String ID) {
+//		Map<Integer, String> ID_Map = new HashMap<Integer, String>();
+//		File contig_ID = new File(ID);
+//		try {
+//			Scanner sc = new Scanner(contig_ID);
+//			while (sc.hasNextLine()) {
+//				String input = sc.nextLine();
+//				String[] elem = input.split(" ");
+//				ID_Map.put(Integer.parseInt(elem[0]), elem[1]);
+//			}
+//			sc.close();
+//		} catch (FileNotFoundException e) {
+//			System.err.println("File not found.");
+//			System.exit(0);
+//		}
+//		return ID_Map;
+//	}
 	
 	
 	/**
@@ -51,25 +55,35 @@ public class SpruceGraph {
 	 * @param f: file containing neighbours on one side, ID_map
 	 * @return a list of neighbours identified by ID numbers
 	 */
-	private static List<Integer> assign_id(String f, Map<Integer, String> m){
-		List<Integer> neighbour_ID = new ArrayList<Integer>();
-		File contigs = new File(f);
-		try {
-			Scanner sc = new Scanner(contigs);
-			while (sc.hasNextLine()) {
-				String inputString = sc.nextLine();
-				for (Integer id : m.keySet()) {
-					if (inputString.compareTo(m.get(id))==0);
-					neighbour_ID.add(id);
-				}
-			}sc.close();
-		} catch (FileNotFoundException e) {
-			System.err.println("File not found.");
-			System.exit(0);
-		}
-		return neighbour_ID;
-	}
 	
+	// An earlier method to assign ID numbers to edge set.
+	// Not feasible due thirst for memory. For own reference.
+	
+//	private static List<Integer> assign_id(String f, Map<Integer, String> m){
+//		List<Integer> neighbour_ID = new ArrayList<Integer>();
+//		File contigs = new File(f);
+//		try {
+//			Scanner sc = new Scanner(contigs);
+//			while (sc.hasNextLine()) {
+//				String inputString = sc.nextLine();
+//				for (Integer id : m.keySet()) {
+//					if (inputString.compareTo(m.get(id))==0);
+//					neighbour_ID.add(id);
+//				}
+//			}sc.close();
+//		} catch (FileNotFoundException e) {
+//			System.err.println("File not found.");
+//			System.exit(0);
+//		}
+//		return neighbour_ID;
+//	}
+	
+	
+	/**
+	 * Reads a txt file of contig IDs and put them into an array list
+	 * @param f: file name
+	 * @return: an array list of contig IDs
+	 */
 	private static List<Integer> constructNeighbours(String f){
 		List<Integer> neighbour_IDs = new ArrayList<Integer>();
 		File neighs = new File(f);
@@ -95,24 +109,25 @@ public class SpruceGraph {
 	
 	
 	/**
-	 * Construct an undirected graph
+	 * Take two vertices, construct an edge between them and add it to the undirected graph. Their traverse status are also registered.
 	 * @param l: left vertex
 	 * @param r: right vertex
 	 */
 	private void addEdge(int l, int r) {
 		graph.putIfAbsent(l, new HashSet<Integer>()); // if this vertex is not in the graph yet, include it and give it an empty HashSet to store its neighbours
 		graph.putIfAbsent(r, new HashSet<Integer>());
-		graph.get(l).add(r);
+		graph.get(l).add(r); // add vertex r as a neighbour of vertex l
 		//graph.get(l).add(l);
 		graph.get(r).add(l);
 		//graph.get(r).add(r);
-		visited.put(l, 0); // at point of construction, initialize all vertices as unvisited
+		visited.put(l, 0); // at point of construction, register all vertices as unvisited
 		visited.put(r, 0);
 	}
 	
 	
 	/**
 	 * DFS traversal. Counts also the size of the component.
+	 * Time complexity: O(component.size)
 	 * @param vertex
 	 * @return: size of component
 	 */
@@ -121,7 +136,7 @@ public class SpruceGraph {
 		int size = 1;
 		for (Integer neighbour : graph.get(vertex)) {	// iterate over the neighbours of this vertex
 			if(visited.get(neighbour) == 0) {
-				size += DFS(neighbour);
+				size += DFS(neighbour); // recursively add the size output into the size count of the component 
 			}
 		}
 		return size;
@@ -129,7 +144,7 @@ public class SpruceGraph {
 	
 	
 	
-	/**
+	/** Overall time complexity is O(n) + O(n) = O(2n). So time complexity is O(n)
 	 * Combo method that counts number of connected components in the graph by doing DFS traversal through the whole graph AND component size distribution
 	 * @return: a list of object. Object 1: number of connected components; Object 2: component size distribution
 	 */
@@ -137,27 +152,27 @@ public class SpruceGraph {
 		List<Object> object = new ArrayList<Object>();
 		List<Integer> comp_sizes = new ArrayList<Integer>();
 		int count = 0;
-		for (Integer vertex : visited.keySet()) {
+		for (Integer vertex : visited.keySet()) { // iterate over all vertices so O(n) amount of work done
 			if (visited.get(vertex) == 0) { // if vertex is not visited, 
 				comp_sizes.add(DFS(vertex)); // visit it and get the size of the component
 				count += 1;
 			}
 		}
-		Map<Integer, Long> size_dist = comp_sizes.stream().collect(Collectors.groupingBy(e -> e, Collectors.counting()));
+		Map<Integer, Long> size_dist = comp_sizes.stream().collect(Collectors.groupingBy(e -> e, Collectors.counting())); //not totally sure of its time complexity. But it should be O(n) if it iterates over all elements and keep counters for each one of them. 
 		object.add(count);
 		object.add(size_dist);
 		return object;
 	}
 	
 	
-	/**
+	/** Overall time complexity is O(n) + O(n) = O(2n). So time complexity is O(n)
 	 * Computes the degree distribution of the graph
 	 * @return: a map of (number of neighbours, frequency)
 	 */
 	
 	private Map<Integer, Long> DegreeDist(){
 		List<Integer> neigh_deg = new ArrayList<Integer>(); //uses dynamic memory.
-		for (Integer vertex : graph.keySet()) {
+		for (Integer vertex : graph.keySet()) { // iterate over all vertices. So O(n) amount of work
 			int degree = graph.get(vertex).size();
 			neigh_deg.add(degree);
 		}
@@ -167,7 +182,7 @@ public class SpruceGraph {
 	
 	
 	/**
-	 * Print the graph as vertex: [neighbours]
+	 * Print the graph as: vertex -> [neighbours]
 	 */
 	private void printGraph() {
 		for (Integer vertex : graph.keySet()) {
@@ -176,12 +191,10 @@ public class SpruceGraph {
 	}
 	
 
-	public static void main(String[] args) { //arg[0]:contigsWithID.txt; arg[1]:left neighbours; arg[2]:right neighbours
+	public static void main(String[] args) { //arg[0]:left neighbours; arg[1]:right neighbours
 		SpruceGraph graph = new SpruceGraph();
-		//String ID_file = "src/proj1/long_list";
-		String left_neigh_file = "src/proj1/l4.txt";
-		String right_neigh_file = "src/proj1/r4.txt";
-		//Map<Integer, String> ID_map = construct_ID_map(ID_file);
+		String left_neigh_file = "src/proj1/l3.txt"; // corresponds to column 1 in data set
+		String right_neigh_file = "src/proj1/r3.txt"; // corresponds to column 2 in data set
 		
 		List<Integer> left_neigh_ID = constructNeighbours(left_neigh_file);
 		List<Integer> right_neigh_ID = constructNeighbours(right_neigh_file);
@@ -200,7 +213,7 @@ public class SpruceGraph {
 		
 		List<Object> comp_result = graph.CountComponent();
 		// compute number of connected component
-		System.out.println("Number of connected components: " + comp_result.get(0));
+		System.out.println("Number of components: " + comp_result.get(0));
 		
 		System.out.println("");
 		
