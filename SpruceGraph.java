@@ -13,12 +13,12 @@ import java.util.Map;
 public class SpruceGraph {
 	
 	Map<Integer, HashSet<Integer>> graph; // initialize an empty hash map of vertices and their neighbours
-	Map<Integer, Integer> visited; // initialize an empty hash map of vertices and their traverse status
+	//Map<Integer, Integer> visited; // initialize an empty hash map of vertices and their traverse status
 	
 	// Constructor
 	SpruceGraph(){
 		graph = new HashMap<Integer, HashSet<Integer>>();
-		visited = new HashMap<Integer, Integer>();
+		//visited = new HashMap<Integer, Integer>();
 	}
 	
 	
@@ -84,7 +84,7 @@ public class SpruceGraph {
 	 * @param f: file name
 	 * @return: an array list of contig IDs
 	 */
-	private static List<Integer> constructNeighbours(String f){
+	private static List<Integer> ConstructNeighbours(String f){
 		List<Integer> neighbour_IDs = new ArrayList<Integer>();
 		File neighs = new File(f);
 		try {
@@ -113,15 +113,15 @@ public class SpruceGraph {
 	 * @param l: left vertex
 	 * @param r: right vertex
 	 */
-	private void addEdge(int l, int r) {
+	private void AddEdge(int l, int r) {
 		graph.putIfAbsent(l, new HashSet<Integer>()); // if this vertex is not in the graph yet, include it and give it an empty HashSet to store its neighbours
 		graph.putIfAbsent(r, new HashSet<Integer>());
 		graph.get(l).add(r); // add vertex r as a neighbour of vertex l
 		//graph.get(l).add(l);
 		graph.get(r).add(l);
 		//graph.get(r).add(r);
-		visited.put(l, 0); // at point of construction, register all vertices as unvisited
-		visited.put(r, 0);
+		//visited.put(l, 0); // at point of construction, register all vertices as unvisited
+		//visited.put(r, 0);
 	}
 	
 	
@@ -131,37 +131,56 @@ public class SpruceGraph {
 	 * @param vertex
 	 * @return: size of component
 	 */
-	private int DFS(int vertex) {
-		visited.put(vertex, 1); // check the visited button for this vertex
+	private int DFS(int vertex, Map<Integer, Integer> map) {
+		map.put(vertex, 1); // check the visited button for this vertex
 		int size = 1;
 		for (Integer neighbour : graph.get(vertex)) {	// iterate over the neighbours of this vertex
-			if(visited.get(neighbour) == 0) {
-				size += DFS(neighbour); // recursively add the size output into the size count of the component 
+			if(map.get(neighbour) == 0) {
+				size += DFS(neighbour, map); // recursively add the size output into the size count of the component 
 			}
 		}
 		return size;
 	}
 	
 	
+	private Map<Integer, Long> ComponentDistr(List<Integer> keys) {
+		List<Integer> comp_sizes = new ArrayList<Integer>();
+		Map<Integer, Integer> visited = new HashMap<Integer, Integer>(); // initialize a hash map of visit statuses of all vertices
+		for (Integer k : keys) {
+			visited.put(k, 0); // initialize visit status of every vertex
+		}
+		for (Integer vertex : visited.keySet()) {
+			if (visited.get(vertex) == 0) {
+				comp_sizes.add(DFS(vertex, visited));
+			}
+		}
+		Map<Integer, Long> size_dist = comp_sizes.stream().collect(Collectors.groupingBy(e -> e, Collectors.counting())); //not totally sure of its time complexity. But it should be O(n) if it iterates over all elements and keep counters for each one of them. 
+		return size_dist;
+	}
 	
 	/** Overall time complexity is O(n) + O(n) = O(2n). So time complexity is O(n)
 	 * Combo method that counts number of connected components in the graph by doing DFS traversal through the whole graph AND component size distribution
 	 * @return: a list of object. Object 1: number of connected components; Object 2: component size distribution
 	 */
-	private List<Object> CountComponent() {
-		List<Object> object = new ArrayList<Object>();
-		List<Integer> comp_sizes = new ArrayList<Integer>();
+	private int CountComponent(List<Integer> keys) {
+		//List<Object> object = new ArrayList<>();
+		//List<Integer> comp_sizes = new ArrayList<Integer>();
+		Map<Integer, Integer> visited = new HashMap<Integer, Integer>(); // initialize a hash map of visit statuses of all vertices
+		for (Integer k : keys) {
+			visited.put(k, 0); // initialize visit status of every vertex
+		}
 		int count = 0;
 		for (Integer vertex : visited.keySet()) { // iterate over all vertices so O(n) amount of work done
 			if (visited.get(vertex) == 0) { // if vertex is not visited, 
-				comp_sizes.add(DFS(vertex)); // visit it and get the size of the component
+				//comp_sizes.add(DFS(vertex)); // visit it and get the size of the component
+				DFS(vertex, visited);
 				count += 1;
 			}
 		}
-		Map<Integer, Long> size_dist = comp_sizes.stream().collect(Collectors.groupingBy(e -> e, Collectors.counting())); //not totally sure of its time complexity. But it should be O(n) if it iterates over all elements and keep counters for each one of them. 
-		object.add(count);
-		object.add(size_dist);
-		return object;
+		//Map<Integer, Long> size_dist = comp_sizes.stream().collect(Collectors.groupingBy(e -> e, Collectors.counting())); //not totally sure of its time complexity. But it should be O(n) if it iterates over all elements and keep counters for each one of them. 
+		//object.add(count);
+		//object.add(size_dist);
+		return count;
 	}
 	
 	
@@ -182,43 +201,66 @@ public class SpruceGraph {
 	
 	
 	/**
+	 * Get the whole key set of the graph.
+	 * @return: key set of the graph
+	 */
+	private List<Integer> GetKeys(){
+		List<Integer> keys = new ArrayList<Integer>();
+		for (Integer k : graph.keySet()) {
+			keys.add(k);
+		}
+		return keys;
+	}
+	
+	
+	/**
 	 * Print the graph as: vertex -> [neighbours]
 	 */
-	private void printGraph() {
+	private void PrintGraph() {
 		for (Integer vertex : graph.keySet()) {
 			System.out.println(vertex.toString() + ": " + graph.get(vertex));
 		}
 	}
 	
+	
 
 	public static void main(String[] args) { //arg[0]:left neighbours; arg[1]:right neighbours
 		SpruceGraph graph = new SpruceGraph();
-		String left_neigh_file = "src/proj1/l3.txt"; // corresponds to column 1 in data set
-		String right_neigh_file = "src/proj1/r3.txt"; // corresponds to column 2 in data set
+		String left_neigh_file = "src/proj1/lfull1.txt"; // corresponds to column 1 in data set
+		String right_neigh_file = "src/proj1/rfull1.txt"; // corresponds to column 2 in data set
 		
-		List<Integer> left_neigh_ID = constructNeighbours(left_neigh_file);
-		List<Integer> right_neigh_ID = constructNeighbours(right_neigh_file);
+		List<Integer> left_neigh_ID = ConstructNeighbours(left_neigh_file);
+		List<Integer> right_neigh_ID = ConstructNeighbours(right_neigh_file);
 		
 		
 		for (int i=0; i<left_neigh_ID.size(); i++) {
-			graph.addEdge(left_neigh_ID.get(i), right_neigh_ID.get(i));
+			graph.AddEdge(left_neigh_ID.get(i), right_neigh_ID.get(i));
 		}
 		
-		//graph.printGraph();
+		//graph.PrintGraph();
 		
 		// compute degree distribution
 		System.out.println("Degree distribution: " + graph.DegreeDist());
 		
-		System.out.println("");
-		
-		List<Object> comp_result = graph.CountComponent();
-		// compute number of connected component
-		System.out.println("Number of components: " + comp_result.get(0));
+		// prints out the number of counts per degree type. For plotting figures.
+//		System.out.println(graph.DegreeDist().keySet());
+//		System.out.println(graph.DegreeDist().values());
 		
 		System.out.println("");
 		
-		// compute component size distribution
-		System.out.println("Component size distribution: " + comp_result.get(1));
+		// print number of components
+		List<Integer> keyset = graph.GetKeys(); // retrieve the keys to the graph 
+		System.out.println("Number of components: " + graph.CountComponent(keyset));
+		
+		System.out.println("");
+		
+		// print component size distribution
+		System.out.println("Component size distribution: " + graph.ComponentDistr(keyset));
+		
+		// prints out the number of counts per component size. For plotting figures.
+//		System.out.println(graph.ComponentDistr(keyset).keySet());
+//		System.out.println(graph.ComponentDistr(keyset).values());
+
 
 		
 	}

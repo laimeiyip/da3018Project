@@ -1,3 +1,8 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
 ## Report 
 
 ### Introduction
@@ -12,8 +17,8 @@ The purpose of this report is to document the work done to provide some statisti
 There is a total of 64056772 edges in the data set. As written in the instructions sheet, columns are 3, 4, 5 and 9 are not relevant for this lab assignment. So I first remove them from the data set. Then I proceed to resolve the _containment_ issue by removing the contained edges. The way I remove contained edges is as follows:
 
 ```r
-if {end of overlap - start of overlap == length.contig} 
-  then remove
+if {overlap.end - overlap.start == contig.length} 
+  then contig.remove
 ```
 
 Finally, since this is an undirected graph, I also remove _commutative_ edges. By commutative, I mean $A$ connected to $B$ is the same as $B$ connected to $A$.
@@ -27,13 +32,8 @@ After completing the above "cleaning" work, there are 22167487 edges left in the
 
 The contigs are constructed with a sequence of letters, special characters and integers. They are too long to work with as identifiers because they will take up too much memory. Using the hint in the lab instructions, I translate the contigs to integers by assigning an integer to each unique contig. First, I collect a list of unique contigs, then I assign an integer to each and every one of them. After assignment of ID numbers, I match the contigs in the edge set to the ID list. 
 
-Again, all these tasks are done in the bash using unix commands. Although unix has very powerful search-and-match commands, it still take a very long time to assign ID numbers to the contigs in the edge set. The `awk` command is very fast but unfortunately is not suited for this task as it returns only the subset of ID numbers whose contigs intersect with those in the edge set. In the edge set, there are surely cases where a given contig is connected to several other contigs. When `awk` is used, it returns one hit of this contig instead of the number of times it appears in the edge set. Hence, I try out two methods:
-
-1. `grep -wf <edge set> <ID list>`
-This method `grep` the contig as a word in the ID list and returns the matching line in the ID list.
-
-2. `while` loop combined with `grep`
-The method reads the edge set file line by line and grep each line with the ID list. It returns the matching line in the ID list.
+Again, all these tasks are done in the bash using unix commands. Unix has very powerful search-and-match commands and it has taken quite some research time to find out which one is the fastest. The `awk` command turns out to be the fastest and is able to complete the assignment of IDs to the full edge under 5 minutes. This is the command:
+`awk 'NR=FNR {A[$2]=$1; next} {print A[$2], $1}' <ID file> <edge.set file> > <output file>`
 
 The edge set is now ready to be used.
 
@@ -45,5 +45,16 @@ The edge set is stored as a hash map with the left vertex as key and an array of
 
 The methods implemented in the Java programme have linear time complexities. To illustrate, I implement the depth-first-search traversal algorithm with recursive calls which helps to keep the time complexity of traversing a component to $O(\text{size of component})$. 
 
+However, for a data set as large as 2GB, the Java programme runs into memory problems both at hash map construction process and component traversal. These problems are resolved when I increase the heap size to 7GB and stack to 1GB. I try my best to be thrifty with memory, for example, by keeping variables local instead of global as much as possible.
+
 ### Results
 
+Figure 1 shows the degree distribution of the graph. It is clearly very skewed with a very long tal and most of the vertices having very few neighbours. In fact, close to 33% of the vertices have only one neighbour and around 20% of them have two neighbours. 
+
+<ins>Figure 1: Degree distribution</ins>
+<img src="da3018proj_degdist.png" alt="Degree Distribution" width="50%"/> 
+
+There are 961874 components in the graph. Figure 2 shows the component size distribution which essentially has the same shape as the degree distribution. Take note that Figure 2 does not include the biggest component which has more than 2 million vertices in it. This is done so that the x-axis of the figure does not explode, which prevents the data points on the left hand side from being squashed together. The single enormous component is made up of more than 30% of the whole vertex set. Otherwise, more than 55% of the components are of size 2, i.e. they are made up of only two vertices, while approximately 16% of them are of size 3.
+
+<ins>Figure 2: Component size distribution</ins>
+<img src="da3018proj_compsizedistn.png" alt="Component Size Distribution" width="50%"/> 
