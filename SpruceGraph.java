@@ -13,7 +13,6 @@ import java.util.Map;
 public class SpruceGraph {
 	
 	Map<Integer, HashSet<Integer>> graph; // initialize an empty hash map of vertices and their neighbours
-	//Map<Integer, Integer> visited; // initialize an empty hash map of vertices and their traverse status
 	
 	// Constructor
 	SpruceGraph(){
@@ -98,12 +97,6 @@ public class SpruceGraph {
 			System.err.println("File not found.");
 			System.exit(0);
 		}
-//		int mid_pt = neighbour_IDs.size()/2;
-//		List<Integer> left_neigh = neighbour_IDs.subList(0, mid_pt);
-//		List<Integer> right_neigh = neighbour_IDs.subList(mid_pt, neighbour_IDs.size());
-//		Map<String, List<Integer>> edge_set = new HashMap<String, List<Integer>>();
-//		edge_set.put("left_neigh", left_neigh);
-//		edge_set.put("right_neigh", right_neigh);
 		return neighbour_IDs;
 	}
 	
@@ -117,11 +110,7 @@ public class SpruceGraph {
 		graph.putIfAbsent(l, new HashSet<Integer>()); // if this vertex is not in the graph yet, include it and give it an empty HashSet to store its neighbours
 		graph.putIfAbsent(r, new HashSet<Integer>());
 		graph.get(l).add(r); // add vertex r as a neighbour of vertex l
-		//graph.get(l).add(l);
 		graph.get(r).add(l);
-		//graph.get(r).add(r);
-		//visited.put(l, 0); // at point of construction, register all vertices as unvisited
-		//visited.put(r, 0);
 	}
 	
 	
@@ -142,14 +131,18 @@ public class SpruceGraph {
 		return size;
 	}
 	
-	
+	/**
+	 * Compute component size distribution
+	 * @param keys: the set of keys to the graph
+	 * @return: a hash map of the component size distribution
+	 */
 	private Map<Integer, Long> ComponentDistr(List<Integer> keys) {
 		List<Integer> comp_sizes = new ArrayList<Integer>();
 		Map<Integer, Integer> visited = new HashMap<Integer, Integer>(); // initialize a hash map of visit statuses of all vertices
 		for (Integer k : keys) {
 			visited.put(k, 0); // initialize visit status of every vertex
 		}
-		for (Integer vertex : visited.keySet()) {
+		for (Integer vertex : visited.keySet()) {// iterate over all vertices. So O(n) amount of work.
 			if (visited.get(vertex) == 0) {
 				comp_sizes.add(DFS(vertex, visited));
 			}
@@ -158,15 +151,15 @@ public class SpruceGraph {
 		return size_dist;
 	}
 	
-	/** Overall time complexity is O(n) + O(n) = O(2n). So time complexity is O(n)
-	 * Combo method that counts number of connected components in the graph by doing DFS traversal through the whole graph AND component size distribution
-	 * @return: a list of object. Object 1: number of connected components; Object 2: component size distribution
+	/** Overall time complexity: O(n) + O(n) = O(2n). So time complexity is O(n).
+	 * Counts number of connected components in the graph by doing DFS traversal through the whole graph
+	 * @return: an integer which is the number of components
 	 */
 	private int CountComponent(List<Integer> keys) {
 		//List<Object> object = new ArrayList<>();
 		//List<Integer> comp_sizes = new ArrayList<Integer>();
 		Map<Integer, Integer> visited = new HashMap<Integer, Integer>(); // initialize a hash map of visit statuses of all vertices
-		for (Integer k : keys) {
+		for (Integer k : keys) { // iterate over all vertices so O(n) amt of work.
 			visited.put(k, 0); // initialize visit status of every vertex
 		}
 		int count = 0;

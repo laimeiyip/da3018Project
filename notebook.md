@@ -137,5 +137,9 @@ Ran the full data set with Java programe. Ok!
 
 Report writing is basically done. Figures inserted.
 
-Next: Do a final check on the report. Remove useless code in the java programme.
+Next: 
+
+1. Discuss characteristics of the algorithms you have considered, why you choose them, their potential limitations, and experiences using them. For example time/space complexity and applicability of an algorithm. 
+
+2. Remove useless code in the java programme.
 

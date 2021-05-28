@@ -47,6 +47,9 @@ The methods implemented in the Java programme have linear time complexities. To 
 
 However, for a data set as large as 2GB, the Java programme runs into memory problems both at hash map construction process and component traversal. These problems are resolved when I increase the heap size to 7GB and stack to 1GB. I try my best to be thrifty with memory, for example, by keeping variables local instead of global as much as possible.
 
+# Describe in your report the characteristics of the algorithms you have considered, why you choose them, their potential limitations, and experiences using them.
+# For example time/space complexity and applicability of an algorithm, on a real-life dataset.
+
 ### Results
 
 Figure 1 shows the degree distribution of the graph. It is clearly very skewed with a very long tal and most of the vertices having very few neighbours. In fact, close to 33% of the vertices have only one neighbour and around 20% of them have two neighbours. 
