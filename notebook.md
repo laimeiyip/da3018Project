@@ -143,3 +143,17 @@ Next:
 
 2. Remove useless code in the java programme.
 
+## 03-6-21
+
+Continue to work more on the report.
+
+Possibly run analysis in python to cross-check.
+
+## 04-06-21
+
+Continue to work more on the report. Beef up discussion on the characteristics of the implemented algorithms, including their suitability on such a large data et.
+
+Checked with Lars that removing the contained contigs does not constitute significant reduction of the data set. 
+
+Images not showing up on github.
+
