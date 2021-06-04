@@ -64,6 +64,7 @@ Most of the methods implemented in the Java programme have linear time complexit
 
 Aside from optimising time complexity, I also try my best to be thrifty with memory, for example, by keeping variables local instead of global as much as possible. But for a data set as large as 2GB, the Java programme runs into memory problems both at the hash map construction process and component traversal. These problems are resolved when I increase the heap size to 7GB and stack to 1GB. I recognise that this may be a problem for users with older computers that may not have such memory capacities.
 
+See comments in the java file on how to run the programme.
 
 ### Results
 

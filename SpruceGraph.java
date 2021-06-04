@@ -1,5 +1,27 @@
 package proj1;
 
+/**
+ * If running within eclipse, do the following:
+ * 
+ * right click on the java file, go to:
+ * Run As - Run Configuration - Arguments - Vm Arguments
+ * then write:
+ * -Xmx7168m
+ * -Xss1024m
+ * 
+ * This is done to resolve memory issue. Also, see the main method to uncomment the right chunk.
+ * Please make sure the data files are stored in the correct directory.
+ * 
+ * If running on command line, do the following:
+ * 
+ * java -Xmx7168m -Xss1024m -Djava.awt.headless=true -jar Spruce.jar <left vertices file> <rright vertices file>
+ * 
+ * For the convenience of evaluating my programme, user can find 
+ * <left vertices file> as lfull1.txt
+ * <right vertices file> as rfull1.txt
+ */
+
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -17,7 +39,6 @@ public class SpruceGraph {
 	// Constructor
 	SpruceGraph(){
 		graph = new HashMap<Integer, HashSet<Integer>>();
-		//visited = new HashMap<Integer, Integer>();
 	}
 	
 	
@@ -157,8 +178,6 @@ public class SpruceGraph {
 	 * @return: an integer which is the number of components
 	 */
 	private int CountComponent(List<Integer> keys) {
-		//List<Object> object = new ArrayList<>();
-		//List<Integer> comp_sizes = new ArrayList<Integer>();
 		Map<Integer, Integer> visited = new HashMap<Integer, Integer>(); // initialize a hash map of visit statuses of all vertices
 		for (Integer k : keys) { // iterate over all vertices so O(|V|) amt of work.
 			visited.put(k, 0); // initialize visit status of every vertex
@@ -166,14 +185,10 @@ public class SpruceGraph {
 		int count = 0;
 		for (Integer vertex : visited.keySet()) { // iterate over all vertices so O(|V|) amount of work done
 			if (visited.get(vertex) == 0) { // if vertex is not visited, 
-				//comp_sizes.add(DFS(vertex)); // visit it and get the size of the component
 				DFS(vertex, visited); // visit it. The recursive calls in DFS will visit all of its neighbours and once this is done, we know that this is one component. DFS has O(|E|)
 				count += 1;
 			}
 		}
-		//Map<Integer, Long> size_dist = comp_sizes.stream().collect(Collectors.groupingBy(e -> e, Collectors.counting())); //not totally sure of its time complexity. But it should be O(n) if it iterates over all elements and keep counters for each one of them. 
-		//object.add(count);
-		//object.add(size_dist);
 		return count;
 	}
 	
@@ -221,8 +236,14 @@ public class SpruceGraph {
 
 	public static void main(String[] args) { //arg[0]:left neighbours; arg[1]:right neighbours
 		SpruceGraph graph = new SpruceGraph();
-		String left_neigh_file = "src/proj1/lfull1.txt"; // corresponds to column 1 in data set
-		String right_neigh_file = "src/proj1/rfull1.txt"; // corresponds to column 2 in data set
+		
+		// for running with file path and file name specified within eclipse
+//		String left_neigh_file = "src/proj1/lfull1.txt"; // corresponds to column 1 in data set
+//		String right_neigh_file = "src/proj1/rfull1.txt"; // corresponds to column 2 in data set
+		
+		// for running at command line
+		String left_neigh_file = args[0]; // corresponds to column 1 in data set
+		String right_neigh_file = args[1];
 		
 		List<Integer> left_neigh_ID = ConstructNeighbours(left_neigh_file);
 		List<Integer> right_neigh_ID = ConstructNeighbours(right_neigh_file);
