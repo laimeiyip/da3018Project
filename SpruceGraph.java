@@ -79,7 +79,7 @@ public class SpruceGraph {
 	
 	
 	/**
-	 * Reads a txt file of contig IDs and put them into an array list
+	 * Reads a text file of contig IDs and put them into an array list
 	 * @param f: file name
 	 * @return: an array list of contig IDs
 	 */
@@ -102,7 +102,7 @@ public class SpruceGraph {
 	
 	
 	/**
-	 * Take two vertices, construct an edge between them and add it to the undirected graph. Their traverse status are also registered.
+	 * Take two vertices, construct an edge between them and add it to the undirected graph. 
 	 * @param l: left vertex
 	 * @param r: right vertex
 	 */
@@ -116,16 +116,16 @@ public class SpruceGraph {
 	
 	/**
 	 * DFS traversal. Counts also the size of the component.
-	 * Time complexity: O(component.size)
-	 * @param vertex
+	 * Time complexity: O(number of edges connected to a vertex) 
+	 * @param: start vertex; a map of the visit statuses of all vertices
 	 * @return: size of component
 	 */
-	private int DFS(int vertex, Map<Integer, Integer> map) {
-		map.put(vertex, 1); // check the visited button for this vertex
+	private int DFS(int vertex, Map<Integer, Integer> visited) {
+		visited.put(vertex, 1); // check the visited button for this vertex
 		int size = 1;
 		for (Integer neighbour : graph.get(vertex)) {	// iterate over the neighbours of this vertex
-			if(map.get(neighbour) == 0) {
-				size += DFS(neighbour, map); // recursively add the size output into the size count of the component 
+			if(visited.get(neighbour) == 0) {
+				size += DFS(neighbour, visited); // recursively add the size output into the size count of the component 
 			}
 		}
 		return size;
@@ -133,16 +133,17 @@ public class SpruceGraph {
 	
 	/**
 	 * Compute component size distribution
+	 * Time complexity: O(|V|) + O(|V|) = O(2|V|) = O(|V|)
 	 * @param keys: the set of keys to the graph
 	 * @return: a hash map of the component size distribution
 	 */
 	private Map<Integer, Long> ComponentDistr(List<Integer> keys) {
 		List<Integer> comp_sizes = new ArrayList<Integer>();
 		Map<Integer, Integer> visited = new HashMap<Integer, Integer>(); // initialize a hash map of visit statuses of all vertices
-		for (Integer k : keys) {
+		for (Integer k : keys) { // iterate over all vertices. O(|V|) amount of work.
 			visited.put(k, 0); // initialize visit status of every vertex
 		}
-		for (Integer vertex : visited.keySet()) {// iterate over all vertices. So O(n) amount of work.
+		for (Integer vertex : visited.keySet()) {// iterate over all vertices. O(|V|) amount of work.
 			if (visited.get(vertex) == 0) {
 				comp_sizes.add(DFS(vertex, visited));
 			}
@@ -151,7 +152,7 @@ public class SpruceGraph {
 		return size_dist;
 	}
 	
-	/** Overall time complexity: O(n) + O(n) = O(2n). So time complexity is O(n).
+	/** Overall time complexity: O(|V|) + O(|V|) = O(2|V|). So time complexity is O(|V|).
 	 * Counts number of connected components in the graph by doing DFS traversal through the whole graph
 	 * @return: an integer which is the number of components
 	 */
@@ -159,14 +160,14 @@ public class SpruceGraph {
 		//List<Object> object = new ArrayList<>();
 		//List<Integer> comp_sizes = new ArrayList<Integer>();
 		Map<Integer, Integer> visited = new HashMap<Integer, Integer>(); // initialize a hash map of visit statuses of all vertices
-		for (Integer k : keys) { // iterate over all vertices so O(n) amt of work.
+		for (Integer k : keys) { // iterate over all vertices so O(|V|) amt of work.
 			visited.put(k, 0); // initialize visit status of every vertex
 		}
 		int count = 0;
-		for (Integer vertex : visited.keySet()) { // iterate over all vertices so O(n) amount of work done
+		for (Integer vertex : visited.keySet()) { // iterate over all vertices so O(|V|) amount of work done
 			if (visited.get(vertex) == 0) { // if vertex is not visited, 
 				//comp_sizes.add(DFS(vertex)); // visit it and get the size of the component
-				DFS(vertex, visited);
+				DFS(vertex, visited); // visit it. The recursive calls in DFS will visit all of its neighbours and once this is done, we know that this is one component. DFS has O(|E|)
 				count += 1;
 			}
 		}
@@ -184,7 +185,7 @@ public class SpruceGraph {
 	
 	private Map<Integer, Long> DegreeDist(){
 		List<Integer> neigh_deg = new ArrayList<Integer>(); //uses dynamic memory.
-		for (Integer vertex : graph.keySet()) { // iterate over all vertices. So O(n) amount of work
+		for (Integer vertex : graph.keySet()) { // iterate over all vertices. So O(V) amount of work
 			int degree = graph.get(vertex).size();
 			neigh_deg.add(degree);
 		}
@@ -194,7 +195,7 @@ public class SpruceGraph {
 	
 	
 	/**
-	 * Get the whole key set of the graph.
+	 * Utility function that gets the whole key set of the graph.
 	 * @return: key set of the graph
 	 */
 	private List<Integer> GetKeys(){
@@ -207,6 +208,7 @@ public class SpruceGraph {
 	
 	
 	/**
+	 * Utility function that prints the neighbour set of every vertex
 	 * Print the graph as: vertex -> [neighbours]
 	 */
 	private void PrintGraph() {
