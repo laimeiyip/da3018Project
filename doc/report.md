@@ -1,8 +1,3 @@
----
-output:
-  html_document: default
-  pdf_document: default
----
 ## Report 
 
 ### Introduction
@@ -77,3 +72,5 @@ There are 961,874 components in the graph. Figure 2 shows the component size dis
 
 <ins>Figure 2: Component size distribution</ins>
 <img src="da3018proj_compsizedistn.png" alt="Component Size Distribution" width="50%"/> 
+
+_Figures are created in RStudio. Code can be found at da3018.Rmd._
