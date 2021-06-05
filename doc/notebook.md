@@ -1,8 +1,11 @@
 ## 24-05-21
 
 Main tasks:
+
 1) Understand contents of the data frame
+
 2) "Clean" the dataframe, e.g remove irrelevant columns, remove "useless" edges, remove commutative pairs
+
 3) Create test sets
 
 - Remove irrelevant columns from the entire data frame.

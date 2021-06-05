@@ -1,3 +1,4 @@
 fulldata.txt filter=lfs diff=lfs merge=lfs -text
 lfull1.txt filter=lfs diff=lfs merge=lfs -text
 rfull1.txt filter=lfs diff=lfs merge=lfs -text
+contigsWithID.txt filter=lfs diff=lfs merge=lfs -text
