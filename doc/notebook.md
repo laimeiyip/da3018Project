@@ -209,3 +209,8 @@ Fixed image problem. Images showing up on github.
 
 Installed git-lfs in order to be able to upload the <left vertices> file and the <right vertices> file. Ok!
 
+## 06-06-21
+
+Decided not to use git lfs. Reason being: exceeded quota and need to purchase more storage.
+
+Data is stored on google drive with a public link.
