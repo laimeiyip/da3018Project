@@ -1,7 +1,7 @@
 package proj1;
 
 /**
- * If running within eclipse, do the following:
+ * If running in eclipse, do the following:
  * 
  * right click on the java file, go to:
  * Run As - Run Configuration - Arguments - Vm Arguments
@@ -160,7 +160,7 @@ public class SpruceGraph {
 	
 	/**
 	 * Compute component size distribution
-	 * Time complexity: O(|V|) + O(|V|) = O(2|V|) = O(|V|)
+	 * Time complexity: O(|V|) + O(|V|) + O(|E|) = O(2|V|) = O(|V|) + O(|E|)
 	 * @param keys: the set of keys to the graph
 	 * @return: a hash map of the component size distribution
 	 */
@@ -172,14 +172,14 @@ public class SpruceGraph {
 		}
 		for (Integer vertex : visited.keySet()) {// iterate over all vertices. O(|V|) amount of work.
 			if (visited.get(vertex) == 0) {
-				comp_sizes.add(DFS(vertex, visited));
+				comp_sizes.add(DFS(vertex, visited)); // DFS has worst case time complexity O(|E|)
 			}
 		}
 		Map<Integer, Long> size_dist = comp_sizes.stream().collect(Collectors.groupingBy(e -> e, Collectors.counting())); //not totally sure of its time complexity. But it should be O(n) if it iterates over all elements and keep counters for each one of them. 
 		return size_dist;
 	}
 	
-	/** Overall time complexity: O(|V|) + O(|V|) = O(2|V|). So time complexity is O(|V|).
+	/** Overall time complexity: O(|V|) + O(|V|) + O(|E|) = O(2|V|) + O(|E|). So time complexity is O(|V|) + O(|E|).
 	 * Counts number of connected components in the graph by doing DFS traversal through the whole graph
 	 * @return: an integer which is the number of components
 	 */
@@ -244,12 +244,12 @@ public class SpruceGraph {
 		SpruceGraph graph = new SpruceGraph();
 		
 		// for running with file path and file name in eclipse
-//		String left_neigh_file = "src/proj1/lfull1.txt"; // corresponds to column 1 in data set
-//		String right_neigh_file = "src/proj1/rfull1.txt"; // corresponds to column 2 in data set
+		String left_neigh_file = "src/proj1/lfull1.txt"; // corresponds to column 1 in data set
+		String right_neigh_file = "src/proj1/rfull1.txt"; // corresponds to column 2 in data set
 		
 		// for running at command line
-		String left_neigh_file = args[0]; // corresponds to column 1 in data set
-		String right_neigh_file = args[1]; // corresponds to column 2 in data set
+		//String left_neigh_file = args[0]; // corresponds to column 1 in data set
+		//String right_neigh_file = args[1]; // corresponds to column 2 in data set
 		
 		List<Integer> left_neigh_ID = ConstructNeighbours(left_neigh_file);
 		List<Integer> right_neigh_ID = ConstructNeighbours(right_neigh_file);
