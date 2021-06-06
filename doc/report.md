@@ -2,7 +2,7 @@
 
 ### Introduction
 
-The purpose of this report is to document the work done to provide some statistical information about the set of DNA segments (also known as contigs) connected as a *undirected* graph where the segments (contigs from now on) are vertices. If two contigs have significant overlaps between them, they are connected to each other and in the graph, there exists an edge between them. For a given contig $i$, the number of contigs connected to it defines its degree. Further, a component is made up of a chain of contigs connected to one another. In this report, the reader will find 
+The purpose of this report is to document the work done to provide some statistical information about the set of DNA segments (also known as contigs) connected as a *undirected* graph where the segments (contigs from now on) are vertices. If two contigs have significant overlaps between them, they are connected to each other and in the graph, there exists an edge between them. For a given contig _i_, the number of contigs connected to it defines its degree. Further, a component is made up of a chain of contigs connected to one another. In this report, the reader will find 
  - degree distribution 
  - number of components
  - component size distribution.
@@ -16,7 +16,7 @@ if {overlap.end - overlap.start == contig.length}:
   contig.remove
 ```
 
-Finally, since this is an undirected graph, I also remove _commutative_ edges. By commutative, I mean $A$ connected to $B$ is the same as $B$ connected to $A$.
+Finally, since this is an undirected graph, I also remove _commutative_ edges. By commutative, I mean _A_ connected to _B_ is the same as _B_ connected to _A_.
 
 Exploratory work is all done in the bash using unix commands. There are very efficient unix commands that can accomplish all the above tasks quickly, in particular the `awk` command. The one-liner I use takes only 4 minutes to do it. The one-liner is
 
@@ -55,7 +55,7 @@ A Java programme is written to accomplish the three statistical tasks set out in
 
 The edge set is stored as a hash map with the left vertex as key and a set of right vertices as value. I use hash map as its data structure suits a graph representation and the `HashMap` library in Java has a comprehensive set of methods that facilitate the computations that I want to do. There are other alternatives such as adjacency matrix and adjacency list. But I find the hash map being the most intuitive and convenient data structure for graph representation.
 
-Most of the methods implemented in the Java programme have linear time complexities as they are just iterating through the vertices and doing some constant amount of work per iteration. The algorithms that do most work are the ones that count component sizes and their distribution. This is due to the depth-first-search traversal algorithm with recursive calls which has time complexity $O(|V| + |E|)$. 
+Most of the methods implemented in the Java programme have linear time complexities as they are just iterating through the vertices and doing some constant amount of work per iteration. The algorithms that do most work are the ones that count component sizes and their distribution. This is due to the depth-first-search traversal algorithm with recursive calls which has time complexity _O(|V| + |E|)_. 
 
 Aside from optimising time complexity, I also try my best to be thrifty with memory, for example, by keeping variables local instead of global as much as possible. But for a data set as large as 2GB, the Java programme runs into memory problems both at the hash map construction process and component traversal. These problems are resolved when I increase the heap size to 7GB and stack to 1GB. I recognise that this may be a problem for users with older computers that may not have such memory capacities.
 
